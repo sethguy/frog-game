@@ -1,0 +1,325 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:500,900&display=swap" rel="stylesheet">
+    <title>froggy time</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+        </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
+        </script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
+
+    <style>
+        body,
+        html {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .froggy {
+            position: absolute;
+        }
+
+        #froggytongleft {
+            position: absolute;
+            background-color: red;
+            height: 10px;
+            width: 100px;
+            top: 0;
+            left: 100%;
+            transition: all .1s;
+        }
+
+        #froggytongContainerLeft {
+            position: absolute;
+            height: 10px;
+            width: 100px;
+            overflow: hidden;
+        }
+
+        #froggytong {
+            position: absolute;
+            background-color: red;
+            height: 10px;
+            width: 0;
+            transition: width .1s;
+            overflow: hidden;
+            font-size: 20px;
+        }
+
+        .flyspot {
+
+            position: absolute;
+            height: 50px;
+            width: 50px;
+
+            transition: top 3s;
+
+        }
+    </style>
+
+</head>
+
+
+
+<script>
+    const state = {
+        on: true,
+        frameWidth: 100,
+        flyArenaCush: 200,
+    };
+
+    const Objects = [];
+
+    const getObjects = () => {
+        return Objects;
+    }
+
+    const run = () => {
+
+        const objects = getObjects();
+
+        if (state.on) {
+            setTimeout(() => run(), state.frameWidth)
+        }
+    }
+
+    const frog = {
+        el: document.getElementById('froggy'),
+    }
+
+    const loadObjects = () => {
+
+    }
+
+
+    const stickFly = () => {
+
+        addFly()
+
+        setTimeout(() => {
+
+            stickFly()
+
+        }, 500)
+    }
+
+    const addFlies = () => {
+
+
+
+
+    }
+
+    const addFly = () => {
+        const root = document.getElementById('root');
+        const rootRect = root.getBoundingClientRect();
+
+        const startX = state.flyArenaCush + (Math.random() * (rootRect.width - (2 * state.flyArenaCush)));
+        const startY = state.flyArenaCush + (Math.random() * (rootRect.height - (2 * state.flyArenaCush)));
+
+        const flyEl = document.createElement('img');
+
+        flyEl.className = 'flyspot';
+        flyEl.src = 'paperbug.png'
+        flyEl.style.left = `${startX}px`;
+        flyEl.style.top = `${startY}px`;
+        root.appendChild(flyEl);
+
+        // setTimeout(() => {
+        //     root.removeChild(flyEl);
+        // }, 2000)
+
+    }
+
+    let lastFroggyPosition = { x: 0, y: 0 }
+    let froggyVelosity = { dx: 0, dy: 0 }
+
+
+
+
+    const initFroggy = () => {
+        const froggytongContainerLeft = document.getElementById('froggytongContainerLeft');
+        const froggytongleft = document.getElementById('froggytongleft');
+
+        const froggy1 = document.getElementById('froggy1');
+        const froggytong = document.getElementById('froggytong');
+
+        const froggyRect = froggy1.getBoundingClientRect();
+
+        document.body.onkeydown = (event) => {
+
+            if (event.code == 'Space') {
+
+                const froggyRect = froggy1.getBoundingClientRect();
+
+                if (froggy1.src.indexOf('flip') == -1) {
+                    froggytong.style.width = '100px';
+                } else {
+                    froggytongleft.style.left = 0;
+                }
+
+
+                const flys = [...document.getElementsByClassName('flyspot')]
+                console.log("TCL: document.body.onkeydown -> flys", flys)
+                flys.forEach((fly) => {
+
+                    if (fly) {
+
+                        const flyRect = fly.getBoundingClientRect();
+
+                        const inwidth = Math.abs(flyRect.x - froggyRect.x) < 200
+                        const inHeight = Math.abs(flyRect.y - froggyRect.y) < 100
+
+                        let rightDirections = froggyVelosity.dx > 0
+                            ? (flyRect.x - froggyRect.x) > 0
+                            : (flyRect.x - froggyRect.x) < 0
+
+                        if (inwidth && inHeight && rightDirections) {
+
+                            try {
+                                const root = document.getElementById('root');
+                                fly.style.height = '70px'
+                                fly.style.width = '70px'
+                                fly.style.opacity = .4
+                                fly.style.top = '-50%'
+                                fly.src = './adigital.png'
+
+                                setTimeout(() => {
+                                    root.removeChild(fly);
+                                }, 2000)
+
+                            } catch (error) {
+
+                            }
+
+                        }
+                    }
+
+                })
+                setTimeout(() => {
+                    froggytong.style.width = 0;
+                    froggytongleft.style.left = '100%';
+                }, 200)
+
+
+
+            }
+
+        }
+
+        document.body.onmousemove = (event) => {
+            const { screenX, screenY, clientX, clientY } = event;
+            const froggyPosition = {
+                x: clientX - froggyRect.width / 2,
+                y: clientY - froggyRect.height / 2
+            }
+            froggy1.style.left = `${froggyPosition.x}px`;
+            froggy1.style.top = `${froggyPosition.y}px`;
+
+            froggytong.style.left = `${froggyPosition.x + 100}px`;
+            froggytong.style.top = `${froggyPosition.y + 50}px`;
+
+            froggytongContainerLeft.style.left = `${froggyPosition.x - 100}px`;
+            froggytongContainerLeft.style.top = `${froggyPosition.y + 50}px`;
+
+            froggyVelosity.dx = froggyPosition.x - lastFroggyPosition.x;
+            froggyVelosity.dy = froggyPosition.y - lastFroggyPosition.y;
+
+            lastFroggyPosition = {
+                ...froggyPosition,
+            }
+
+            if (froggyVelosity.dx > 0) {
+                froggy1.src = "./froggy1.png"
+            } else {
+                froggy1.src = "./flipfroggy1.png"
+            }
+        }
+    }
+
+
+    const onload = () => {
+
+        initFroggy();
+
+        stickFly()
+    }
+
+// target elements with the "draggable" class
+// interact('.froggy')
+//   .draggable({
+//     // enable inertial throwing
+//     inertia: true,
+//     // keep the element within the area of it's parent
+//     modifiers: [
+//       interact.modifiers.restrictRect({
+//         restriction: 'parent',
+//         endOnly: true
+//       })
+//     ],
+//     // enable autoScroll
+//     autoScroll: true,
+
+//     // call this function on every dragmove event
+//     onmove: dragMoveListener,
+//     // call this function on every dragend event
+//     onend: function (event) {
+
+
+//     }
+//   })
+
+// function dragMoveListener (event) {
+//   var target = event.target
+//   // keep the dragged position in the data-x/data-y attributes
+//   var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
+//   var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
+
+//   // translate the element
+//   target.style.webkitTransform =
+//     target.style.transform =
+//       'translate(' + x + 'px, ' + y + 'px)'
+
+//   // update the posiion attributes
+//   target.setAttribute('data-x', x)
+//   target.setAttribute('data-y', y)
+// }
+
+// // this is used later in the resizing and gesture demos
+// window.dragMoveListener = dragMoveListener
+
+
+</script>
+
+<body onLoad="onload(event)">
+    <div class='h-100' id="root">
+        <div id='froggytong'>digital</div>
+
+        <div id='froggytongContainerLeft'>
+            <div id='froggytongleft'> digital </div>
+        </div>
+
+        <img id="froggy1" src="./froggy1.png" alt="" class="froggy">
+
+    </div>
+</body>
+
+</html>
